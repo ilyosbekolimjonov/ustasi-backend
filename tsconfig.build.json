@@ -1,0 +1,18 @@
+{
+  "extends": "./tsconfig.json",
+  "exclude": [
+    "node_modules",
+    "test",
+    "dist",
+    "generated",
+    "**/*spec.ts",
+    "src/modules/catalog/**/*",
+    "src/modules/comments/**/*",
+    "src/modules/content/**/*",
+    "src/modules/geography/**/*",
+    "src/modules/masters/**/*",
+    "src/modules/orders/order-master/**/*",
+    "src/modules/professions/**/*",
+    "src/modules/tools/**/*"
+  ]
+}

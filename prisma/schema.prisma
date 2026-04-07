@@ -1,0 +1,386 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Region {
+  id        String   @id @default(uuid())
+  nameUz    String   @map("name_uz")
+  nameRu    String   @map("name_ru")
+  nameEn    String   @map("name_en")
+  users     User[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model User {
+  id                             String             @id @default(uuid())
+  fullname                       String
+  email                          String             @unique
+  phone                          String             @unique
+  passwordHash                   String             @map("password")
+  iin                            String?            @map("IIN")
+  mfo                            String?            @map("MFO")
+  rs                             String?            @map("RS")
+  bank                           String?            @map("BANK")
+  oked                           String?            @map("OKED")
+  address                        String?
+  role                           Role               @default(USER_FIZ)
+  status                         UserStatus         @default(INACTIVE)
+  isVerified                     Boolean            @default(false)
+  emailVerificationTokenHash     String?
+  emailVerificationTokenExpiresAt DateTime?
+  regionId                       String
+  region                         Region             @relation(fields: [regionId], references: [id])
+  sessions                       Session[]
+  orders                         Order[]
+  baskets                        Basket[]
+  comments                       Comment[]
+  createdAt                      DateTime           @default(now())
+  updatedAt                      DateTime           @updatedAt
+}
+
+model Session {
+  id               String   @id @default(uuid())
+  ip               String?
+  userAgent        String?
+  refreshTokenHash String
+  expiresAt        DateTime
+  revokedAt        DateTime?
+  userId           String
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model Level {
+  id                String             @id @default(uuid())
+  nameUz            String             @map("name_uz")
+  nameRu            String             @map("name_ru")
+  nameEn            String             @map("name_en")
+  masterProfessions MasterProfession[]
+  professionLevels  ProfessionLevel[]
+  orderProducts     OrderProduct[]
+  baskets           Basket[]
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+}
+
+model Profession {
+  id                String             @id @default(uuid())
+  nameUz            String             @map("name_uz")
+  nameRu            String             @map("name_ru")
+  nameEn            String             @map("name_en")
+  image             String
+  isActive          Boolean            @default(false)
+  masterProfessions MasterProfession[]
+  professionLevels  ProfessionLevel[]
+  professionTools   ProfessionTool[]
+  orderProducts     OrderProduct[]
+  baskets           Basket[]
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+}
+
+model Master {
+  id                String             @id @default(uuid())
+  firstName         String             @map("firstname")
+  lastName          String             @map("lastname")
+  phoneNumber       String
+  isActive          Boolean            @default(false)
+  year              Int
+  image             String
+  passportImage     String             @map("pasportImage")
+  about             String
+  averageStar       Decimal            @default(0) @map("avarageStar") @db.Decimal(4, 2)
+  masterProfessions MasterProfession[]
+  orderMasters      OrderMaster[]
+  comments          Comment[]
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+}
+
+model MasterProfession {
+  id              String     @id @default(uuid())
+  professionId    String
+  profession      Profession @relation(fields: [professionId], references: [id], onDelete: Cascade)
+  minWorkingHours Int
+  levelId         String
+  level           Level      @relation(fields: [levelId], references: [id], onDelete: Cascade)
+  priceHourly     Decimal    @db.Decimal(12, 2)
+  priceDaily      Decimal    @db.Decimal(12, 2)
+  experience      Int
+  masterId        String
+  master          Master     @relation(fields: [masterId], references: [id], onDelete: Cascade)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  @@unique([masterId, professionId, levelId])
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  star      Decimal  @db.Decimal(3, 2)
+  masterId  String
+  master    Master   @relation(fields: [masterId], references: [id], onDelete: Cascade)
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([masterId, userId])
+}
+
+model ProfessionLevel {
+  id              String     @id @default(uuid())
+  professionId    String
+  profession      Profession @relation(fields: [professionId], references: [id], onDelete: Cascade)
+  levelId         String
+  level           Level      @relation(fields: [levelId], references: [id], onDelete: Cascade)
+  minWorkingHours Int
+  priceHourly     Decimal    @db.Decimal(12, 2)
+  priceDaily      Decimal    @db.Decimal(12, 2)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  @@unique([professionId, levelId])
+}
+
+model Tool {
+  id             String           @id @default(uuid())
+  nameUz         String           @map("name_uz")
+  nameRu         String           @map("name_ru")
+  nameEn         String           @map("name_en")
+  descriptionUz  String           @map("description_uz")
+  descriptionRu  String           @map("description_ru")
+  descriptionEn  String           @map("description_en")
+  price          Decimal          @db.Decimal(12, 2)
+  quantity       Int
+  code           Int              @unique
+  image          String
+  isAvailable    Boolean          @default(false)
+  brandId        String?
+  brand          Brand?           @relation(fields: [brandId], references: [id], onDelete: SetNull)
+  capacityId     String?          @map("capasityId")
+  capacity       Capacity?        @relation(fields: [capacityId], references: [id], onDelete: SetNull)
+  sizeId         String?
+  size           Size?            @relation(fields: [sizeId], references: [id], onDelete: SetNull)
+  professionTools ProfessionTool[]
+  orderProducts  OrderProduct[]
+  baskets        Basket[]
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+}
+
+model ProfessionTool {
+  id           String     @id @default(uuid())
+  professionId String
+  profession   Profession @relation(fields: [professionId], references: [id], onDelete: Cascade)
+  toolId       String
+  tool         Tool       @relation(fields: [toolId], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@unique([professionId, toolId])
+}
+
+model Order {
+  id              String         @id @default(uuid())
+  userId          String
+  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  address         String
+  longitude       String
+  latitude        String
+  date            DateTime       @default(now())
+  totalPrice      Decimal        @db.Decimal(12, 2)
+  paymentType     PaymentType
+  withDelivery    Boolean
+  status          OrderStatus    @default(PENDING)
+  deliveryComment String
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  orderMasters    OrderMaster[]
+  orderProducts   OrderProduct[]
+}
+
+model OrderMaster {
+  id        String   @id @default(uuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  masterId  String
+  master    Master   @relation(fields: [masterId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([orderId, masterId])
+}
+
+model OrderProduct {
+  id           String      @id @default(uuid())
+  orderId      String
+  order        Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  professionId String?
+  profession   Profession? @relation(fields: [professionId], references: [id], onDelete: SetNull)
+  toolId       String?
+  tool         Tool?       @relation(fields: [toolId], references: [id], onDelete: SetNull)
+  levelId      String?
+  level        Level?      @relation(fields: [levelId], references: [id], onDelete: SetNull)
+  timeUnit     TimeUnit
+  workingTime  Int
+  price        Decimal     @db.Decimal(12, 2)
+  count        Int
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+}
+
+model Basket {
+  id           String     @id @default(uuid())
+  userId       String
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  professionId String
+  profession   Profession @relation(fields: [professionId], references: [id], onDelete: Cascade)
+  toolId       String
+  tool         Tool       @relation(fields: [toolId], references: [id], onDelete: Cascade)
+  count        Int
+  timeUnit     TimeUnit
+  workingTime  Int
+  levelId      String
+  level        Level      @relation(fields: [levelId], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@unique([userId, professionId, toolId, levelId, timeUnit])
+}
+
+model Brand {
+  id        String   @id @default(uuid())
+  nameUz    String   @map("name_uz")
+  nameRu    String   @map("name_ru")
+  nameEn    String   @map("name_en")
+  tools     Tool[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Capacity {
+  id        String   @id @default(uuid())
+  nameUz    String   @map("name_uz")
+  nameRu    String   @map("name_ru")
+  nameEn    String   @map("name_en")
+  tools     Tool[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("Capasity")
+}
+
+model Size {
+  id        String   @id @default(uuid())
+  nameUz    String   @map("name_uz")
+  nameRu    String   @map("name_ru")
+  nameEn    String   @map("name_en")
+  tools     Tool[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model FAQ {
+  id         String   @id @default(uuid())
+  questionUz String   @map("question_uz")
+  questionRu String   @map("question_ru")
+  questionEn String   @map("question_en")
+  answerUz   String   @map("answer_uz")
+  answerRu   String   @map("answer_ru")
+  answerEn   String   @map("answer_en")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model ContactUs {
+  id        String   @id @default(uuid())
+  firstName String   @map("firstname")
+  lastName  String   @map("lastname")
+  phone     String
+  address   String
+  message   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("Contact_Us")
+}
+
+model AboutUs {
+  id                   String   @id @default(uuid())
+  generalInformationUz String   @map("generalInformation_uz")
+  generalInformationRu String   @map("generalInformation_ru")
+  generalInformationEn String   @map("generalInformation_en")
+  email                String
+  link                 String
+  phone                String
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@map("About_Us")
+}
+
+model Partner {
+  id        String   @id @default(uuid())
+  nameUz    String   @map("name_uz")
+  nameRu    String   @map("name_ru")
+  nameEn    String   @map("name_en")
+  image     String
+  link      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("Partners")
+}
+
+model Showcase {
+  id            String   @id @default(uuid())
+  nameUz        String   @map("name_uz")
+  nameRu        String   @map("name_ru")
+  nameEn        String   @map("name_en")
+  descriptionUz String   @map("description_uz")
+  descriptionRu String   @map("description_ru")
+  descriptionEn String   @map("description_en")
+  image         String
+  link          String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("ShowCase")
+}
+
+enum Role {
+  USER_FIZ
+  USER_YUR
+  ADMIN
+  SUPER_ADMIN
+  VIEWER_ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum PaymentType {
+  PAYME
+  CASH
+}
+
+enum OrderStatus {
+  PENDING
+  ACTIVE
+  CANCELLED
+  COMPLETED @map("COMPLETEED")
+}
+
+enum TimeUnit {
+  HOUR
+  DAY
+}

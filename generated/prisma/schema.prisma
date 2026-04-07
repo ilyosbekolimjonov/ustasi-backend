@@ -1,0 +1,56 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Region {
+  id      String @id @default(uuid())
+  name_uz String
+  name_ru String
+  name_en String
+  User    User[]
+}
+
+model User {
+  id       String      @id @default(uuid())
+  fullname String
+  password String
+  phone    String      @unique
+  IIN      String      @default("")
+  MFO      String      @default("")
+  RS       String      @default("")
+  BANK     String      @default("")
+  OKED     String      @default("")
+  address  String      @default("")
+  role     ROLE        @default(USER_FIZ)
+  status   USER_STATUS @default(INACTIVE)
+  regionId String
+  region   Region      @relation(fields: [regionId], references: [id])
+  Session  Session[]
+}
+
+model Session {
+  id          String @id @default(uuid())
+  device_name String
+  ip          String
+  userId      String
+  user        User   @relation(fields: [userId], references: [id])
+}
+
+enum ROLE {
+  USER_FIZ
+  USER_YUR
+  ADMIN
+  SUPER_ADMIN
+  VIEWER_ADMIN
+}
+
+enum USER_STATUS {
+  ACTIVE
+  INACTIVE
+}
