@@ -7,4 +7,3 @@ export class UpdateOrderStatusDto {
   @IsIn(Object.values(OrderStatus))
   status!: OrderStatus;
 }
-

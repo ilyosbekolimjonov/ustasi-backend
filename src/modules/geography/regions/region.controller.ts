@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { RegionService } from './region.service';
 import { CreateRegionDto } from './dto/create-region.dto';
 import { UpdateRegionDto } from './dto/update-region.dto';
@@ -19,12 +29,16 @@ import { RolesGuard } from '../../../common/guards/roles.guard';
 @ApiTags('Region')
 @Controller('region')
 export class RegionController {
-  constructor(private readonly regionService: RegionService) { }
+  constructor(private readonly regionService: RegionService) {}
 
   @Post()
   @ApiOperation({ summary: 'Create a new region' })
   @ApiBody({ type: CreateRegionDto })
-  @ApiResponse({ status: 201, description: 'Region created successfully', type: CreateRegionDto })
+  @ApiResponse({
+    status: 201,
+    description: 'Region created successfully',
+    type: CreateRegionDto,
+  })
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiBearerAuth()
@@ -36,10 +50,29 @@ export class RegionController {
 
   @Get()
   @ApiOperation({ summary: 'Get all regions with pagination and search' })
-  @ApiQuery({ name: 'page', required: false, description: 'Page number', type: Number })
-  @ApiQuery({ name: 'limit', required: false, description: 'Items per page', type: Number })
-  @ApiQuery({ name: 'search', required: false, description: 'Search keyword', type: String })
-  @ApiResponse({ status: 200, description: 'List of regions', type: [CreateRegionDto] })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    description: 'Page number',
+    type: Number,
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    description: 'Items per page',
+    type: Number,
+  })
+  @ApiQuery({
+    name: 'search',
+    required: false,
+    description: 'Search keyword',
+    type: String,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'List of regions',
+    type: [CreateRegionDto],
+  })
   findAll(@Query() query: { page?: number; limit?: number; search?: string }) {
     const page = Number(query.page) || 1;
     const limit = Number(query.limit) || 10;
@@ -50,7 +83,11 @@ export class RegionController {
   @Get(':id')
   @ApiOperation({ summary: 'Get a region by ID' })
   @ApiParam({ name: 'id', required: true, description: 'Region ID' })
-  @ApiResponse({ status: 200, description: 'Region found', type: CreateRegionDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Region found',
+    type: CreateRegionDto,
+  })
   @ApiResponse({ status: 404, description: 'Region not found' })
   findOne(@Param('id') id: string) {
     return this.regionService.findOne(id);
@@ -60,7 +97,11 @@ export class RegionController {
   @ApiOperation({ summary: 'Update a region by ID' })
   @ApiParam({ name: 'id', required: true, description: 'Region ID' })
   @ApiBody({ type: UpdateRegionDto })
-  @ApiResponse({ status: 200, description: 'Region updated successfully', type: CreateRegionDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Region updated successfully',
+    type: CreateRegionDto,
+  })
   @ApiResponse({ status: 404, description: 'Region not found' })
   @ApiBearerAuth()
   @Roles(ROLE.ADMIN, ROLE.SUPER_ADMIN)
@@ -81,4 +122,3 @@ export class RegionController {
     return this.regionService.remove(id);
   }
 }
-

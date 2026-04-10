@@ -1,4 +1,13 @@
-import { Body, Controller, Delete, Get, Param, Patch, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UserRole } from '../../common/constants/domain.enums';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
@@ -24,7 +33,9 @@ export class UsersController {
   }
 
   @Patch('me')
-  @ApiOperation({ summary: 'Update the authenticated user without privileged fields' })
+  @ApiOperation({
+    summary: 'Update the authenticated user without privileged fields',
+  })
   updateMe(@CurrentUser('sub') userId: string, @Body() dto: SelfUpdateUserDto) {
     return this.usersService.updateSelf(userId, dto);
   }
@@ -57,4 +68,3 @@ export class UsersController {
     return this.usersService.remove(id);
   }
 }
-

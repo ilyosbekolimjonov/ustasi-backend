@@ -42,4 +42,3 @@ export class CreateProfessionLevelDto {
   @IsNotEmpty()
   priceDaily: number;
 }
-

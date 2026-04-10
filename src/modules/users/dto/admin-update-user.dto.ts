@@ -1,5 +1,12 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsBoolean, IsEmail, IsIn, IsOptional, IsString, IsUUID } from 'class-validator';
+import {
+  IsBoolean,
+  IsEmail,
+  IsIn,
+  IsOptional,
+  IsString,
+  IsUUID,
+} from 'class-validator';
 import { UserRole, UserStatus } from '../../../common/constants/domain.enums';
 
 export class AdminUpdateUserDto {
@@ -68,4 +75,3 @@ export class AdminUpdateUserDto {
   @IsString()
   address?: string;
 }
-

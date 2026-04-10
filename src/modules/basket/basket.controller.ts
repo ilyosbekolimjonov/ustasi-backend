@@ -1,4 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { AuthGuard } from '../../common/guards/auth.guard';
@@ -22,12 +32,17 @@ export class BasketController {
 
   @Get()
   @ApiOperation({ summary: 'List only the authenticated user basket items' })
-  findMine(@CurrentUser('sub') userId: string, @Query() query: PaginationQueryDto) {
+  findMine(
+    @CurrentUser('sub') userId: string,
+    @Query() query: PaginationQueryDto,
+  ) {
     return this.basketService.findMine(userId, query);
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get a single basket item owned by the current user' })
+  @ApiOperation({
+    summary: 'Get a single basket item owned by the current user',
+  })
   findOne(@CurrentUser('sub') userId: string, @Param('id') id: string) {
     return this.basketService.findOne(userId, id);
   }
@@ -48,4 +63,3 @@ export class BasketController {
     return this.basketService.remove(userId, id);
   }
 }
-

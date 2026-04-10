@@ -7,4 +7,3 @@ import { LevelController } from './level.controller';
   providers: [LevelService],
 })
 export class LevelModule {}
-

@@ -26,7 +26,6 @@ import { ROLE } from '../../../common/constants/legacy-prisma.enums';
 import { AuthGuard } from '../../../common/guards/auth.guard';
 import { RolesGuard } from '../../../common/guards/roles.guard';
 
-
 @ApiTags('Master')
 @Controller('master')
 export class MasterController {
@@ -44,18 +43,52 @@ export class MasterController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all masters (with pagination, search, filters, and star sorting)' })
-  @ApiQuery({ name: 'page', required: false, example: 1, description: 'Page number (default: 1)' })
-  @ApiQuery({ name: 'limit', required: false, example: 10, description: 'Items per page (default: 10)' })
-  @ApiQuery({ name: 'search', required: false, example: 'ali', description: 'Search by firstname, lastname or phoneNumber' })
-  @ApiQuery({ name: 'from', required: false, example: 2020, description: 'Filter masters with year >= from' })
-  @ApiQuery({ name: 'to', required: false, example: 2024, description: 'Filter masters with year <= to' })
-  @ApiQuery({ name: 'isActive', required: false, example: 'true', description: 'Filter by activity status (true/false)' })
+  @ApiOperation({
+    summary:
+      'Get all masters (with pagination, search, filters, and star sorting)',
+  })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    example: 1,
+    description: 'Page number (default: 1)',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    example: 10,
+    description: 'Items per page (default: 10)',
+  })
+  @ApiQuery({
+    name: 'search',
+    required: false,
+    example: 'ali',
+    description: 'Search by firstname, lastname or phoneNumber',
+  })
+  @ApiQuery({
+    name: 'from',
+    required: false,
+    example: 2020,
+    description: 'Filter masters with year >= from',
+  })
+  @ApiQuery({
+    name: 'to',
+    required: false,
+    example: 2024,
+    description: 'Filter masters with year <= to',
+  })
+  @ApiQuery({
+    name: 'isActive',
+    required: false,
+    example: 'true',
+    description: 'Filter by activity status (true/false)',
+  })
   @ApiQuery({
     name: 'starOrder',
     required: false,
     example: 'desc',
-    description: 'Order by average star rating: "asc" for low to high, "desc" for high to low (default: desc)',
+    description:
+      'Order by average star rating: "asc" for low to high, "desc" for high to low (default: desc)',
   })
   @ApiResponse({ status: 200, description: 'List of masters returned' })
   findAll(
@@ -75,7 +108,15 @@ export class MasterController {
     const search = query.search || '';
     const isActive = query.isActive || '';
     const orderByStar = query.starOrder || 'desc';
-    return this.masterService.findAll(page, limit, search, query.from, query.to, isActive, orderByStar);
+    return this.masterService.findAll(
+      page,
+      limit,
+      search,
+      query.from,
+      query.to,
+      isActive,
+      orderByStar,
+    );
   }
 
   @Get(':id')
@@ -112,4 +153,3 @@ export class MasterController {
     return this.masterService.remove(id);
   }
 }
-

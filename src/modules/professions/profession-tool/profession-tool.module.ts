@@ -7,4 +7,3 @@ import { ProfessionToolController } from './profession-tool.controller';
   providers: [ProfessionToolService],
 })
 export class ProfessionToolModule {}
-

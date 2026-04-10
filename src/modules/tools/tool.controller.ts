@@ -52,7 +52,10 @@ export class ToolController {
   @ApiQuery({ name: 'sizeName', required: false, example: 'M' })
   @ApiQuery({ name: 'priceFrom', required: false, example: 100 })
   @ApiQuery({ name: 'priceTo', required: false, example: 500 })
-  @ApiResponse({ status: 200, description: 'List of tools returned successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of tools returned successfully',
+  })
   findAll(
     @Query()
     query: {
@@ -103,7 +106,7 @@ export class ToolController {
     return this.toolService.update(id, updateToolDto);
   }
 
-  @Delete(':id') 
+  @Delete(':id')
   @ApiOperation({ summary: 'Delete a tool by ID' })
   @ApiParam({ name: 'id', description: 'Tool ID' })
   @ApiResponse({ status: 200, description: 'Tool deleted successfully' })
@@ -114,4 +117,3 @@ export class ToolController {
     return this.toolService.remove(id);
   }
 }
-

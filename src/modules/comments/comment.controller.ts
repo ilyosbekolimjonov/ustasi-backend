@@ -27,11 +27,10 @@ import { ROLE } from '../../common/constants/legacy-prisma.enums';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 
-
 @ApiTags('Comment')
 @Controller('comment')
 export class CommentController {
-  constructor(private readonly commentService: CommentService) { }
+  constructor(private readonly commentService: CommentService) {}
 
   @Post()
   @ApiOperation({ summary: 'Create a new comment for a master' })
@@ -87,4 +86,3 @@ export class CommentController {
     return this.commentService.remove(id);
   }
 }
-

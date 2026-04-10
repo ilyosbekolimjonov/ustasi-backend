@@ -26,11 +26,10 @@ import { ROLE } from '../../../common/constants/legacy-prisma.enums';
 import { AuthGuard } from '../../../common/guards/auth.guard';
 import { RolesGuard } from '../../../common/guards/roles.guard';
 
-
 @ApiTags('Partners')
 @Controller('partners')
 export class PartnersController {
-  constructor(private readonly partnersService: PartnersService) { }
+  constructor(private readonly partnersService: PartnersService) {}
 
   @Post()
   @ApiOperation({ summary: 'Create a new partner' })
@@ -90,4 +89,3 @@ export class PartnersController {
     return this.partnersService.remove(id);
   }
 }
-

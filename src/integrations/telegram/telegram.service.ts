@@ -29,7 +29,9 @@ export class TelegramService {
 
       if (!response.ok) {
         const errorText = await response.text();
-        this.logger.warn(`Telegram message failed: ${response.status} ${errorText}`);
+        this.logger.warn(
+          `Telegram message failed: ${response.status} ${errorText}`,
+        );
       }
     } catch (error) {
       this.logger.warn(

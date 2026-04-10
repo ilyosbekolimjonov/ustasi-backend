@@ -29,7 +29,7 @@ import { RolesGuard } from '../../../common/guards/roles.guard';
 @ApiTags('Profession')
 @Controller('profession')
 export class ProfessionController {
-  constructor(private readonly professionService: ProfessionService) { }
+  constructor(private readonly professionService: ProfessionService) {}
 
   @Post()
   @ApiOperation({ summary: 'Create a new profession' })
@@ -71,7 +71,7 @@ export class ProfessionController {
     const page = Number(query.page) || 1;
     const limit = Number(query.limit) || 10;
     const search = query.search || '';
-    let isActive = query.isActive || ""
+    const isActive = query.isActive || '';
     return this.professionService.findAll(page, limit, search, isActive);
   }
 
@@ -92,7 +92,10 @@ export class ProfessionController {
   @ApiBearerAuth()
   @Roles(ROLE.ADMIN, ROLE.SUPER_ADMIN)
   @UseGuards(AuthGuard, RolesGuard)
-  update(@Param('id') id: string, @Body() updateProfessionDto: UpdateProfessionDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateProfessionDto: UpdateProfessionDto,
+  ) {
     return this.professionService.update(id, updateProfessionDto);
   }
 
@@ -107,4 +110,3 @@ export class ProfessionController {
     return this.professionService.remove(id);
   }
 }
-

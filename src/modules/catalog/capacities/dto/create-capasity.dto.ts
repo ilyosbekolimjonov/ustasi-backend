@@ -17,4 +17,3 @@ export class CreateCapasityDto {
   @IsNotEmpty()
   name_en: string;
 }
-

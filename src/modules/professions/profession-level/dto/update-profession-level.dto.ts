@@ -3,7 +3,9 @@ import { CreateProfessionLevelDto } from './create-profession-level.dto';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
-export class UpdateProfessionLevelDto extends PartialType(CreateProfessionLevelDto) {
+export class UpdateProfessionLevelDto extends PartialType(
+  CreateProfessionLevelDto,
+) {
   @ApiPropertyOptional({
     example: 'e9a85f7d-6e6b-4701-9c88-4b871debd01a',
     description: 'UUID of the profession',
@@ -44,4 +46,3 @@ export class UpdateProfessionLevelDto extends PartialType(CreateProfessionLevelD
   @IsOptional()
   priceDaily?: number;
 }
-

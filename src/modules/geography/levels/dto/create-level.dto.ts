@@ -17,4 +17,3 @@ export class CreateLevelDto {
   @IsNotEmpty()
   name_en: string;
 }
-

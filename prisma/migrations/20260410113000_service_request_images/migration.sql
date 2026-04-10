@@ -1,0 +1,2 @@
+ALTER TABLE "ServiceRequest"
+  ADD COLUMN "images" TEXT[] NOT NULL DEFAULT ARRAY[]::TEXT[];

@@ -1,19 +1,33 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, IsOptional, IsString, IsUUID, MinLength } from 'class-validator';
+import {
+  IsEmail,
+  IsIn,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  Matches,
+  MaxLength,
+  Min,
+  MinLength,
+  ValidateIf,
+} from 'class-validator';
+import { UserRole } from '../../../common/constants/domain.enums';
 
 export class RegisterDto {
   @ApiProperty({ example: 'Ali Aliyev' })
   @IsString()
   @IsNotEmpty()
-  fullname!: string;
+  fullName!: string;
 
   @ApiProperty({ example: 'ali@gmail.com' })
   @IsEmail()
   email!: string;
 
   @ApiProperty({ example: '+998901234567' })
-  @IsString()
-  @IsNotEmpty()
+  @Matches(/^\+?[1-9]\d{7,14}$/, {
+    message: 'Phone number must be in international format',
+  })
   phone!: string;
 
   @ApiProperty({ example: 'StrongPassword!23' })
@@ -21,38 +35,60 @@ export class RegisterDto {
   @MinLength(8)
   password!: string;
 
-  @ApiProperty({ example: '9cb28b9d-4504-4c1e-8d42-8047f0c5ef5b' })
-  @IsUUID()
-  regionId!: string;
+  @ApiProperty({
+    enum: [UserRole.USER, UserRole.MASTER],
+    example: UserRole.USER,
+  })
+  @IsIn([UserRole.USER, UserRole.MASTER])
+  role!: typeof UserRole.USER | typeof UserRole.MASTER;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: 'https://cdn.example.com/avatar.jpg' })
   @IsOptional()
   @IsString()
-  iin?: string;
+  avatarUrl?: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: 'Santexnik' })
+  @ValidateIf((dto: RegisterDto) => dto.role === UserRole.MASTER)
+  @IsString()
+  @IsNotEmpty()
+  category?: string;
+
+  @ApiPropertyOptional({ example: 'Toshkent' })
+  @ValidateIf((dto: RegisterDto) => dto.role === UserRole.MASTER)
+  @IsString()
+  @IsNotEmpty()
+  city?: string;
+
+  @ApiPropertyOptional({ example: 'Yunusobod' })
   @IsOptional()
   @IsString()
-  mfo?: string;
+  region?: string;
 
-  @ApiPropertyOptional()
-  @IsOptional()
+  @ApiPropertyOptional({ example: '7 yil tajriba' })
+  @ValidateIf((dto: RegisterDto) => dto.role === UserRole.MASTER)
   @IsString()
-  rs?: string;
+  @MaxLength(160)
+  @IsNotEmpty()
+  experienceText?: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: 7 })
   @IsOptional()
-  @IsString()
-  bank?: string;
+  @IsInt()
+  @Min(0)
+  experienceYears?: number;
 
-  @ApiPropertyOptional()
-  @IsOptional()
+  @ApiPropertyOptional({
+    example: 'Uy-joy va ofis santexnika ishlarida ishlayman.',
+  })
+  @ValidateIf((dto: RegisterDto) => dto.role === UserRole.MASTER)
   @IsString()
-  oked?: string;
+  @MaxLength(1000)
+  @IsNotEmpty()
+  bio?: string;
 
-  @ApiPropertyOptional()
-  @IsOptional()
+  @ApiPropertyOptional({ example: 'https://cdn.example.com/master.jpg' })
+  @ValidateIf((dto: RegisterDto) => dto.role === UserRole.MASTER)
   @IsString()
-  address?: string;
+  @IsNotEmpty()
+  profileImageUrl?: string;
 }
-

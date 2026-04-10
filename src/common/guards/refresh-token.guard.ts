@@ -17,19 +17,29 @@ export class RefreshTokenGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context.switchToHttp().getRequest<
-      Request & { user?: JwtPayload; body: { refreshToken?: string } }
-    >();
-    const refreshToken = request.body?.refreshToken;
+    const request = context
+      .switchToHttp()
+      .getRequest<Request & { user?: JwtPayload }>();
+    const body = request.body as unknown;
+    const refreshToken =
+      body &&
+      typeof body === 'object' &&
+      'refreshToken' in body &&
+      typeof body.refreshToken === 'string'
+        ? body.refreshToken
+        : undefined;
 
     if (!refreshToken) {
       throw new UnauthorizedException('Refresh token is required');
     }
 
     try {
-      const payload = await this.jwtService.verifyAsync<JwtPayload>(refreshToken, {
-        secret: this.configService.getOrThrow<string>('auth.refreshSecret'),
-      });
+      const payload = await this.jwtService.verifyAsync<JwtPayload>(
+        refreshToken,
+        {
+          secret: this.configService.getOrThrow<string>('auth.refreshSecret'),
+        },
+      );
 
       if (payload.type !== 'refresh') {
         throw new UnauthorizedException('Invalid token type');

@@ -20,4 +20,3 @@ export class UpdateProfessionDto extends PartialType(CreateProfessionDto) {
   })
   isActive?: boolean;
 }
-

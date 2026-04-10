@@ -17,4 +17,3 @@ export class CreateBrandDto {
   @IsNotEmpty()
   name_en: string;
 }
-

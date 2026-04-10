@@ -7,4 +7,3 @@ import { ProfessionLevelController } from './profession-level.controller';
   providers: [ProfessionLevelService],
 })
 export class ProfessionLevelModule {}
-

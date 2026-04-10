@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { SizeService } from './size.service';
 import { CreateSizeDto } from './dto/create-size.dto';
 import { UpdateSizeDto } from './dto/update-size.dto';
@@ -16,7 +26,6 @@ import { ROLE } from '../../../common/constants/legacy-prisma.enums';
 import { AuthGuard } from '../../../common/guards/auth.guard';
 import { RolesGuard } from '../../../common/guards/roles.guard';
 
-
 @ApiTags('Size')
 @Controller('size')
 export class SizeController {
@@ -25,7 +34,11 @@ export class SizeController {
   @Post()
   @ApiOperation({ summary: 'Create a new size' })
   @ApiBody({ type: CreateSizeDto })
-  @ApiResponse({ status: 201, description: 'Size created successfully', type: CreateSizeDto })
+  @ApiResponse({
+    status: 201,
+    description: 'Size created successfully',
+    type: CreateSizeDto,
+  })
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiBearerAuth()
@@ -37,10 +50,29 @@ export class SizeController {
 
   @Get()
   @ApiOperation({ summary: 'Get all sizes with pagination and search' })
-  @ApiQuery({ name: 'page', required: false, description: 'Page number', type: Number })
-  @ApiQuery({ name: 'limit', required: false, description: 'Items per page', type: Number })
-  @ApiQuery({ name: 'search', required: false, description: 'Search keyword', type: String })
-  @ApiResponse({ status: 200, description: 'List of sizes', type: [CreateSizeDto] })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    description: 'Page number',
+    type: Number,
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    description: 'Items per page',
+    type: Number,
+  })
+  @ApiQuery({
+    name: 'search',
+    required: false,
+    description: 'Search keyword',
+    type: String,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'List of sizes',
+    type: [CreateSizeDto],
+  })
   findAll(@Query() query: { page?: number; limit?: number; search?: string }) {
     const page = Number(query.page) || 1;
     const limit = Number(query.limit) || 10;
@@ -61,7 +93,11 @@ export class SizeController {
   @ApiOperation({ summary: 'Update a size by ID' })
   @ApiParam({ name: 'id', required: true, description: 'Size ID' })
   @ApiBody({ type: UpdateSizeDto })
-  @ApiResponse({ status: 200, description: 'Size updated successfully', type: CreateSizeDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Size updated successfully',
+    type: CreateSizeDto,
+  })
   @ApiResponse({ status: 404, description: 'Size not found' })
   @ApiBearerAuth()
   @Roles(ROLE.ADMIN, ROLE.SUPER_ADMIN)
@@ -82,4 +118,3 @@ export class SizeController {
     return this.sizeService.remove(id);
   }
 }
-

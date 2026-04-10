@@ -22,19 +22,27 @@ export class CreateMasterDto {
   @IsNotEmpty()
   year!: number;
 
-  @ApiProperty({ example: 'https://example.com/image.jpg', description: 'Profile image URL' })
+  @ApiProperty({
+    example: 'https://example.com/image.jpg',
+    description: 'Profile image URL',
+  })
   @IsString()
   @IsNotEmpty()
   image!: string;
 
-  @ApiProperty({ example: 'https://example.com/passport.jpg', description: 'Passport image URL' })
+  @ApiProperty({
+    example: 'https://example.com/passport.jpg',
+    description: 'Passport image URL',
+  })
   @IsString()
   @IsNotEmpty()
   pasportImage!: string;
 
-  @ApiProperty({ example: 'Certified master with 5 years of experience', description: 'About master' })
+  @ApiProperty({
+    example: 'Certified master with 5 years of experience',
+    description: 'About master',
+  })
   @IsString()
   @IsNotEmpty()
   about!: string;
 }
-

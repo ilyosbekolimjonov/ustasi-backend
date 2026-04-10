@@ -12,15 +12,19 @@ import { ContactUsModule } from './modules/content/contacts/contact_us.module';
 import { FaqModule } from './modules/content/faq/faq.module';
 import { PartnersModule } from './modules/content/partners/partners.module';
 import { ShowcaseModule } from './modules/content/showcase/showcase.module';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { LevelModule } from './modules/geography/levels/level.module';
 import { RegionModule } from './modules/geography/regions/region.module';
+import { MasterProfilesModule } from './modules/master-profiles/master-profiles.module';
 import { MasterModule } from './modules/masters/master/master.module';
 import { MasterProfessionModule } from './modules/masters/master-profession/master-profession.module';
 import { OrdersModule } from './modules/orders/orders.module';
 import { OrderMasterModule } from './modules/orders/order-master/order-master.module';
+import { ProductsModule } from './modules/products/products.module';
 import { ProfessionModule } from './modules/professions/profession/profession.module';
 import { ProfessionLevelModule } from './modules/professions/profession-level/profession-level.module';
 import { ProfessionToolModule } from './modules/professions/profession-tool/profession-tool.module';
+import { ServiceRequestsModule } from './modules/service-requests/service-requests.module';
 import { ToolModule } from './modules/tools/tool.module';
 import { UploadsModule } from './modules/uploads/uploads.module';
 import { UsersModule } from './modules/users/users.module';
@@ -63,14 +67,18 @@ import { PrismaModule } from './prisma/prisma.module';
     FaqModule,
     PartnersModule,
     ShowcaseModule,
+    DashboardModule,
     LevelModule,
     RegionModule,
+    MasterProfilesModule,
     MasterModule,
     MasterProfessionModule,
     OrderMasterModule,
+    ProductsModule,
     ProfessionModule,
     ProfessionLevelModule,
     ProfessionToolModule,
+    ServiceRequestsModule,
     ToolModule,
     UploadsModule,
   ],

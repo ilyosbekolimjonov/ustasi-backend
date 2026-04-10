@@ -2,7 +2,9 @@ import { PartialType } from '@nestjs/mapped-types';
 import { CreateMasterProfessionDto } from './create-master-profession.dto';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
-export class UpdateMasterProfessionDto extends PartialType(CreateMasterProfessionDto) {
+export class UpdateMasterProfessionDto extends PartialType(
+  CreateMasterProfessionDto,
+) {
   @ApiPropertyOptional({ description: 'Profession ID' })
   professionId?: string;
 
@@ -24,4 +26,3 @@ export class UpdateMasterProfessionDto extends PartialType(CreateMasterProfessio
   @ApiPropertyOptional({ description: 'Master ID' })
   masterId?: string;
 }
-

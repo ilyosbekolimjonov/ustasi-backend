@@ -34,7 +34,11 @@ export class FaqController {
   @Post()
   @ApiOperation({ summary: 'Create a new FAQ' })
   @ApiBody({ type: CreateFaqDto })
-  @ApiResponse({ status: 201, description: 'FAQ created successfully', type: CreateFaqDto })
+  @ApiResponse({
+    status: 201,
+    description: 'FAQ created successfully',
+    type: CreateFaqDto,
+  })
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @ApiBearerAuth()
   @Roles(ROLE.ADMIN)
@@ -45,10 +49,29 @@ export class FaqController {
 
   @Get()
   @ApiOperation({ summary: 'Get all FAQs with pagination and search' })
-  @ApiQuery({ name: 'page', required: false, description: 'Page number', type: Number })
-  @ApiQuery({ name: 'limit', required: false, description: 'Items per page', type: Number })
-  @ApiQuery({ name: 'search', required: false, description: 'Search keyword', type: String })
-  @ApiResponse({ status: 200, description: 'List of FAQs', type: [CreateFaqDto] })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    description: 'Page number',
+    type: Number,
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    description: 'Items per page',
+    type: Number,
+  })
+  @ApiQuery({
+    name: 'search',
+    required: false,
+    description: 'Search keyword',
+    type: String,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'List of FAQs',
+    type: [CreateFaqDto],
+  })
   findAll(@Query() query: { page?: number; limit?: number; search?: string }) {
     const page = Number(query.page) || 1;
     const limit = Number(query.limit) || 10;
@@ -69,7 +92,11 @@ export class FaqController {
   @ApiOperation({ summary: 'Update a FAQ by ID' })
   @ApiParam({ name: 'id', required: true, description: 'FAQ ID' })
   @ApiBody({ type: UpdateFaqDto })
-  @ApiResponse({ status: 200, description: 'FAQ updated successfully', type: CreateFaqDto })
+  @ApiResponse({
+    status: 200,
+    description: 'FAQ updated successfully',
+    type: CreateFaqDto,
+  })
   @ApiResponse({ status: 404, description: 'FAQ not found' })
   @ApiBearerAuth()
   @Roles(ROLE.ADMIN, ROLE.SUPER_ADMIN)
@@ -90,4 +117,3 @@ export class FaqController {
     return this.faqService.remove(id);
   }
 }
-

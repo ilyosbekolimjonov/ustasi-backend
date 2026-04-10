@@ -34,7 +34,11 @@ export class LevelController {
   @Post()
   @ApiOperation({ summary: 'Create a new level' })
   @ApiBody({ type: CreateLevelDto })
-  @ApiResponse({ status: 201, description: 'Level created successfully', type: CreateLevelDto })
+  @ApiResponse({
+    status: 201,
+    description: 'Level created successfully',
+    type: CreateLevelDto,
+  })
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @ApiBearerAuth()
   @Roles(ROLE.ADMIN)
@@ -45,10 +49,29 @@ export class LevelController {
 
   @Get()
   @ApiOperation({ summary: 'Get all levels with pagination and search' })
-  @ApiQuery({ name: 'page', required: false, description: 'Page number', type: Number })
-  @ApiQuery({ name: 'limit', required: false, description: 'Items per page', type: Number })
-  @ApiQuery({ name: 'search', required: false, description: 'Search keyword', type: String })
-  @ApiResponse({ status: 200, description: 'List of levels', type: [CreateLevelDto] })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    description: 'Page number',
+    type: Number,
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    description: 'Items per page',
+    type: Number,
+  })
+  @ApiQuery({
+    name: 'search',
+    required: false,
+    description: 'Search keyword',
+    type: String,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'List of levels',
+    type: [CreateLevelDto],
+  })
   findAll(@Query() query: { page?: number; limit?: number; search?: string }) {
     const page = Number(query.page) || 1;
     const limit = Number(query.limit) || 10;
@@ -59,7 +82,11 @@ export class LevelController {
   @Get(':id')
   @ApiOperation({ summary: 'Get a level by ID' })
   @ApiParam({ name: 'id', required: true, description: 'Level ID' })
-  @ApiResponse({ status: 200, description: 'Level found', type: CreateLevelDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Level found',
+    type: CreateLevelDto,
+  })
   @ApiResponse({ status: 404, description: 'Level not found' })
   findOne(@Param('id') id: string) {
     return this.levelService.findOne(id);
@@ -69,7 +96,11 @@ export class LevelController {
   @ApiOperation({ summary: 'Update a level by ID' })
   @ApiParam({ name: 'id', required: true, description: 'Level ID' })
   @ApiBody({ type: UpdateLevelDto })
-  @ApiResponse({ status: 200, description: 'Level updated successfully', type: CreateLevelDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Level updated successfully',
+    type: CreateLevelDto,
+  })
   @ApiResponse({ status: 404, description: 'Level not found' })
   @ApiBearerAuth()
   @Roles(ROLE.ADMIN, ROLE.SUPER_ADMIN)
@@ -90,4 +121,3 @@ export class LevelController {
     return this.levelService.remove(id);
   }
 }
-

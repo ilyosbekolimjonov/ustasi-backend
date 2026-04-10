@@ -37,4 +37,3 @@ export class CreateMasterProfessionDto {
   @IsNotEmpty()
   masterId: string;
 }
-

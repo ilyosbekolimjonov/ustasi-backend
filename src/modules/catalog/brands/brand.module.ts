@@ -7,4 +7,3 @@ import { BrandController } from './brand.controller';
   providers: [BrandService],
 })
 export class BrandModule {}
-

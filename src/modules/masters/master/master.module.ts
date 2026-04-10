@@ -7,4 +7,3 @@ import { MasterController } from './master.controller';
   providers: [MasterService],
 })
 export class MasterModule {}
-

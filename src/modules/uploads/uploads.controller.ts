@@ -17,6 +17,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { AuthGuard } from '../../common/guards/auth.guard';
+import { Public } from '../../common/decorators/public.decorator';
 import { UploadsService } from './uploads.service';
 import type { Express } from 'express';
 
@@ -31,6 +32,44 @@ class UploadFileDto {
 @Controller('uploads')
 export class UploadsController {
   constructor(private readonly uploadsService: UploadsService) {}
+
+  @Public()
+  @Post('public')
+  @ApiOperation({
+    summary: 'Upload a public image to Cloudinary for signup/profile flows',
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: UploadFileDto })
+  @ApiCreatedResponse({ description: 'Public file uploaded successfully' })
+  @UseInterceptors(
+    FileInterceptor('file', {
+      limits: {
+        fileSize: 5 * 1024 * 1024,
+      },
+      fileFilter: (_request, file, callback) => {
+        const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp'];
+
+        if (!allowedMimeTypes.includes(file.mimetype)) {
+          callback(
+            new BadRequestException(
+              'Only jpeg, png, and webp files are allowed',
+            ),
+            false,
+          );
+          return;
+        }
+
+        callback(null, true);
+      },
+    }),
+  )
+  async uploadPublic(@UploadedFile() file: Express.Multer.File) {
+    if (!file) {
+      throw new BadRequestException('File is required');
+    }
+
+    return this.uploadsService.upload(file);
+  }
 
   @Post()
   @ApiOperation({ summary: 'Upload an authenticated image to Cloudinary' })
@@ -47,7 +86,9 @@ export class UploadsController {
 
         if (!allowedMimeTypes.includes(file.mimetype)) {
           callback(
-            new BadRequestException('Only jpeg, png, and webp files are allowed'),
+            new BadRequestException(
+              'Only jpeg, png, and webp files are allowed',
+            ),
             false,
           );
           return;
@@ -65,4 +106,3 @@ export class UploadsController {
     return this.uploadsService.upload(file);
   }
 }
-

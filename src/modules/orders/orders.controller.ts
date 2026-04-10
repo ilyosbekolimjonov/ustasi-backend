@@ -1,4 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UserRole } from '../../common/constants/domain.enums';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
@@ -19,14 +29,19 @@ export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
   @Post()
-  @ApiOperation({ summary: 'Create an order with server-side price calculation' })
+  @ApiOperation({
+    summary: 'Create an order with server-side price calculation',
+  })
   create(@CurrentUser('sub') userId: string, @Body() dto: CreateOrderDto) {
     return this.ordersService.create(userId, dto);
   }
 
   @Get()
   @ApiOperation({ summary: 'List only the authenticated user orders' })
-  findMine(@CurrentUser('sub') userId: string, @Query() query: PaginationQueryDto) {
+  findMine(
+    @CurrentUser('sub') userId: string,
+    @Query() query: PaginationQueryDto,
+  ) {
     return this.ordersService.findMine(userId, query);
   }
 
@@ -48,7 +63,10 @@ export class OrdersController {
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: 'Update safe mutable order fields without changing status or pricing history' })
+  @ApiOperation({
+    summary:
+      'Update safe mutable order fields without changing status or pricing history',
+  })
   update(
     @CurrentUser('sub') userId: string,
     @CurrentUser('role') role: string,
@@ -66,7 +84,9 @@ export class OrdersController {
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete an order if it belongs to the current user or admin' })
+  @ApiOperation({
+    summary: 'Delete an order if it belongs to the current user or admin',
+  })
   remove(
     @CurrentUser('sub') userId: string,
     @CurrentUser('role') role: string,
@@ -75,4 +95,3 @@ export class OrdersController {
     return this.ordersService.remove(userId, role, id);
   }
 }
-

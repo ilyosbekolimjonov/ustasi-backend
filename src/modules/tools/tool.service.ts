@@ -1,15 +1,20 @@
-import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateToolDto } from './dto/create-tool.dto';
 import { UpdateToolDto } from './dto/update-tool.dto';
 import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
 export class ToolService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async create(createToolDto: CreateToolDto) {
     try {
-      let tool = await this.prisma.tool.create({
+      const tool = await this.prisma.tool.create({
         data: {
           nameUz: createToolDto.name_uz,
           nameRu: createToolDto.name_ru,
@@ -26,11 +31,11 @@ export class ToolService {
           capacityId: createToolDto.capasityId,
           sizeId: createToolDto.sizeId,
         },
-      })
-      return tool
+      });
+      return tool;
     } catch (error) {
       console.log(error);
-      throw new InternalServerErrorException(error)
+      throw new InternalServerErrorException(error);
     }
   }
 
@@ -71,7 +76,7 @@ export class ToolService {
     capasityName?: string,
     sizeName?: string,
     priceFrom?: number,
-    priceTo?: number
+    priceTo?: number,
   ) {
     try {
       const pageNumber = Number(page);
@@ -94,30 +99,42 @@ export class ToolService {
       if (brandName) {
         whereConditions.AND.push({
           OR: [
-            { brand: { nameUz: { contains: brandName, mode: "insensitive" } } },
-            { brand: { nameRu: { contains: brandName, mode: "insensitive" } } },
-            { brand: { nameEn: { contains: brandName, mode: "insensitive" } } }
-          ]
+            { brand: { nameUz: { contains: brandName, mode: 'insensitive' } } },
+            { brand: { nameRu: { contains: brandName, mode: 'insensitive' } } },
+            { brand: { nameEn: { contains: brandName, mode: 'insensitive' } } },
+          ],
         });
       }
 
       if (capasityName) {
         whereConditions.AND.push({
           OR: [
-            { capacity: { nameUz: { contains: capasityName, mode: "insensitive" } } },
-            { capacity: { nameRu: { contains: capasityName, mode: "insensitive" } } },
-            { capacity: { nameEn: { contains: capasityName, mode: "insensitive" } } }
-          ]
+            {
+              capacity: {
+                nameUz: { contains: capasityName, mode: 'insensitive' },
+              },
+            },
+            {
+              capacity: {
+                nameRu: { contains: capasityName, mode: 'insensitive' },
+              },
+            },
+            {
+              capacity: {
+                nameEn: { contains: capasityName, mode: 'insensitive' },
+              },
+            },
+          ],
         });
       }
 
       if (sizeName) {
         whereConditions.AND.push({
           OR: [
-            { size: { nameUz: { contains: sizeName, mode: "insensitive" } } },
-            { size: { nameRu: { contains: sizeName, mode: "insensitive" } } },
-            { size: { nameEn: { contains: sizeName, mode: "insensitive" } } }
-          ]
+            { size: { nameUz: { contains: sizeName, mode: 'insensitive' } } },
+            { size: { nameRu: { contains: sizeName, mode: 'insensitive' } } },
+            { size: { nameEn: { contains: sizeName, mode: 'insensitive' } } },
+          ],
         });
       }
 
@@ -128,7 +145,7 @@ export class ToolService {
 
         whereConditions.AND.push({ price: priceFilter });
       }
- 
+
       const tools = await this.prisma.tool.findMany({
         where: whereConditions,
         skip: (pageNumber - 1) * limitNumber,
@@ -150,17 +167,17 @@ export class ToolService {
 
   async findOne(id: string) {
     try {
-      let tool = await this.prisma.tool.findUnique({ where: { id } })
-      if (!tool) throw new NotFoundException("Not found")
-      return tool
+      const tool = await this.prisma.tool.findUnique({ where: { id } });
+      if (!tool) throw new NotFoundException('Not found');
+      return tool;
     } catch (error) {
-      throw new InternalServerErrorException(error)
+      throw new InternalServerErrorException(error);
     }
   }
 
   async update(id: string, updateToolDto: UpdateToolDto) {
     try {
-      let updated = await this.prisma.tool.update({
+      const updated = await this.prisma.tool.update({
         data: {
           nameUz: updateToolDto.name_uz,
           nameRu: updateToolDto.name_ru,
@@ -177,21 +194,20 @@ export class ToolService {
           capacityId: updateToolDto.capasityId,
           sizeId: updateToolDto.sizeId,
         },
-        where: { id }
-      })
-      return updated
+        where: { id },
+      });
+      return updated;
     } catch (error) {
-      throw new InternalServerErrorException(error)
+      throw new InternalServerErrorException(error);
     }
   }
 
   async remove(id: string) {
     try {
-      let deleted = await this.prisma.tool.delete({ where: { id } })
-      return deleted
+      const deleted = await this.prisma.tool.delete({ where: { id } });
+      return deleted;
     } catch (error) {
-      throw new InternalServerErrorException(error)
+      throw new InternalServerErrorException(error);
     }
   }
 }
-

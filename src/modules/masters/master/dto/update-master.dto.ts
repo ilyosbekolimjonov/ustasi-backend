@@ -24,4 +24,3 @@ export class UpdateMasterDto extends PartialType(CreateMasterDto) {
   @ApiPropertyOptional({ description: 'About master' })
   about?: string;
 }
-

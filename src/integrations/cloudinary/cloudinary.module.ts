@@ -9,7 +9,8 @@ import { CloudinaryUploadService } from './cloudinary.service';
     CloudinaryModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
-        const cloudinary = configService.getOrThrow<CloudinaryConfig>('cloudinary');
+        const cloudinary =
+          configService.getOrThrow<CloudinaryConfig>('cloudinary');
 
         return {
           cloud_name: cloudinary.cloudName,

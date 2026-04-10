@@ -1,5 +1,5 @@
-import { IsNotEmpty, IsString } from "class-validator";
-import { ApiProperty } from "@nestjs/swagger";
+import { IsNotEmpty, IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateSizeDto {
   @ApiProperty({ example: 'Kichik', description: 'Size name in Uzbek' })
@@ -17,4 +17,3 @@ export class CreateSizeDto {
   @IsNotEmpty()
   name_en: string;
 }
-

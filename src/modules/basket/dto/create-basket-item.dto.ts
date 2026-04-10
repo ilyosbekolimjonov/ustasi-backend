@@ -31,4 +31,3 @@ export class CreateBasketItemDto {
   @IsUUID()
   levelId!: string;
 }
-

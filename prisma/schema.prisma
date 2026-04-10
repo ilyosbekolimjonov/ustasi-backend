@@ -22,6 +22,7 @@ model User {
   email                          String             @unique
   phone                          String             @unique
   passwordHash                   String             @map("password")
+  avatarUrl                      String?            @map("avatar_url")
   iin                            String?            @map("IIN")
   mfo                            String?            @map("MFO")
   rs                             String?            @map("RS")
@@ -33,14 +34,39 @@ model User {
   isVerified                     Boolean            @default(false)
   emailVerificationTokenHash     String?
   emailVerificationTokenExpiresAt DateTime?
-  regionId                       String
-  region                         Region             @relation(fields: [regionId], references: [id])
+  regionId                       String?
+  region                         Region?            @relation(fields: [regionId], references: [id])
   sessions                       Session[]
+  masterProfile                  MasterProfile?
+  serviceRequests                ServiceRequest[]   @relation("OwnedServiceRequests")
+  claimedRequests                ServiceRequest[]   @relation("ClaimedServiceRequests")
   orders                         Order[]
   baskets                        Basket[]
   comments                       Comment[]
   createdAt                      DateTime           @default(now())
   updatedAt                      DateTime           @updatedAt
+}
+
+model MasterProfile {
+  id                String   @id @default(uuid())
+  userId            String   @unique
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug              String   @unique
+  category          String
+  city              String
+  region            String?
+  bio               String
+  experienceText    String
+  experienceYears   Int?
+  profileImageUrl   String
+  isAvailable       Boolean  @default(true)
+  ratingAverage     Decimal  @default(0) @db.Decimal(4, 2)
+  jobsCompletedCount Int     @default(0)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([category, city])
+  @@index([isAvailable])
 }
 
 model Session {
@@ -206,6 +232,30 @@ model Order {
   orderProducts   OrderProduct[]
 }
 
+model ServiceRequest {
+  id                String               @id @default(uuid())
+  userId            String
+  user              User                 @relation("OwnedServiceRequests", fields: [userId], references: [id], onDelete: Cascade)
+  title             String
+  description       String
+  category          String
+  city              String
+  addressText       String?
+  budgetMin         Decimal?             @db.Decimal(12, 2)
+  budgetMax         Decimal?             @db.Decimal(12, 2)
+  images            String[]             @default([])
+  status            ServiceRequestStatus @default(OPEN)
+  claimedByMasterId String?
+  claimedByMaster   User?                @relation("ClaimedServiceRequests", fields: [claimedByMasterId], references: [id], onDelete: SetNull)
+  claimedAt         DateTime?
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+
+  @@index([userId, status])
+  @@index([status, city, category])
+  @@index([claimedByMasterId, status])
+}
+
 model OrderMaster {
   id        String   @id @default(uuid())
   orderId   String
@@ -356,6 +406,8 @@ model Showcase {
 }
 
 enum Role {
+  USER
+  MASTER
   USER_FIZ
   USER_YUR
   ADMIN
@@ -378,6 +430,14 @@ enum OrderStatus {
   ACTIVE
   CANCELLED
   COMPLETED @map("COMPLETEED")
+}
+
+enum ServiceRequestStatus {
+  OPEN
+  CLAIMED
+  IN_PROGRESS
+  DONE
+  CANCELLED
 }
 
 enum TimeUnit {

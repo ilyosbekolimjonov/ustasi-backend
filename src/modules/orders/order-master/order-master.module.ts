@@ -7,4 +7,3 @@ import { OrderMasterController } from './order-master.controller';
   providers: [OrderMasterService],
 })
 export class OrderMasterModule {}
-
