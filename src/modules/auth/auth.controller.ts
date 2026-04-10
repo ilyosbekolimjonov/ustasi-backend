@@ -24,6 +24,7 @@ import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { RegisterDto } from './dto/register.dto';
+import { ResendVerificationDto } from './dto/resend-verification.dto';
 import type { Request } from 'express';
 import type { JwtPayload } from '../../common/types/jwt-payload.interface';
 
@@ -33,8 +34,18 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Public()
+  @Post('signup')
+  @ApiOperation({
+    summary:
+      'Create a USER or MASTER account and send an email verification link',
+  })
+  signup(@Body() registerDto: RegisterDto) {
+    return this.authService.register(registerDto);
+  }
+
+  @Public()
   @Post('register')
-  @ApiOperation({ summary: 'Register a new user and send email verification link' })
+  @ApiOperation({ summary: 'Backward-compatible signup alias' })
   register(@Body() registerDto: RegisterDto) {
     return this.authService.register(registerDto);
   }
@@ -52,16 +63,27 @@ export class AuthController {
 
   @Public()
   @Get('verify-email')
-  @ApiOperation({ summary: 'Verify account email by signed verification token' })
+  @ApiOperation({
+    summary: 'Verify account email by signed verification token',
+  })
   verifyEmail(@Query('token') token: string) {
     return this.authService.verifyEmail(token);
+  }
+
+  @Public()
+  @Post('resend-verification')
+  @ApiOperation({ summary: 'Resend the email verification link' })
+  resendVerification(@Body() body: ResendVerificationDto) {
+    return this.authService.resendVerificationEmail(body.email);
   }
 
   @Public()
   @UseGuards(RefreshTokenGuard)
   @Post('refresh')
   @HttpCode(200)
-  @ApiOperation({ summary: 'Rotate refresh token and issue a new access token pair' })
+  @ApiOperation({
+    summary: 'Rotate refresh token and issue a new access token pair',
+  })
   refresh(
     @CurrentUser() user: JwtPayload,
     @Body() body: RefreshTokenDto,
@@ -109,4 +131,3 @@ export class AuthController {
     return this.authService.deleteSession(userId, id);
   }
 }
-

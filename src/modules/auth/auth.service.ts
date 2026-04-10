@@ -9,20 +9,20 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Role, UserStatus as PrismaUserStatus } from '@prisma/client';
 import { randomUUID } from 'crypto';
-import { UserRole, UserStatus } from '../../common/constants/domain.enums';
-import { JwtPayload } from '../../common/types/jwt-payload.interface';
+import { UserRole } from '../../common/constants/domain.enums';
+import type { JwtPayload } from '../../common/types/jwt-payload.interface';
 import {
   comparePassword,
   generateOpaqueToken,
   hashPassword,
   sha256,
 } from '../../common/utils/hash.util';
-import { AuthConfig } from '../../config/auth.config';
+import type { AuthConfig } from '../../config/auth.config';
 import { EmailService } from '../../integrations/email/email.service';
+import { PrismaService } from '../../prisma/prisma.service';
 import { toPublicUser } from '../users/user.mapper';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
-import { PrismaService } from '../../prisma/prisma.service';
 
 type RequestMeta = {
   ip: string | null;
@@ -43,17 +43,20 @@ export class AuthService {
   }
 
   async register(registerDto: RegisterDto) {
-    const existingByEmail = await this.prisma.user.findUnique({
-      where: { email: registerDto.email },
+    const email = registerDto.email.trim().toLowerCase();
+    const phone = registerDto.phone.trim();
+
+    const existingUser = await this.prisma.user.findFirst({
+      where: {
+        OR: [{ email }, { phone }],
+      },
     });
-    if (existingByEmail) {
+
+    if (existingUser?.email === email) {
       throw new BadRequestException('Email already in use');
     }
 
-    const existingByPhone = await this.prisma.user.findUnique({
-      where: { phone: registerDto.phone },
-    });
-    if (existingByPhone) {
+    if (existingUser?.phone === phone) {
       throw new BadRequestException('Phone already in use');
     }
 
@@ -61,31 +64,50 @@ export class AuthService {
     const verificationTokenHash = sha256(verificationToken);
     const passwordHash = await hashPassword(registerDto.password);
 
-    const user = await this.prisma.user.create({
-      data: {
-        fullname: registerDto.fullname,
-        email: registerDto.email,
-        phone: registerDto.phone,
-        passwordHash,
-        regionId: registerDto.regionId,
-        role: UserRole.USER_FIZ as Role,
-        status: UserStatus.INACTIVE as PrismaUserStatus,
-        isVerified: false,
-        iin: registerDto.iin ?? null,
-        mfo: registerDto.mfo ?? null,
-        rs: registerDto.rs ?? null,
-        bank: registerDto.bank ?? null,
-        oked: registerDto.oked ?? null,
-        address: registerDto.address ?? null,
-        emailVerificationTokenHash: verificationTokenHash,
-        emailVerificationTokenExpiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
-      },
+    const user = await this.prisma.$transaction(async (tx) => {
+      return tx.user.create({
+        data: {
+          fullname: registerDto.fullName.trim(),
+          email,
+          phone,
+          passwordHash,
+          avatarUrl: registerDto.avatarUrl?.trim() || null,
+          role: registerDto.role as Role,
+          status: PrismaUserStatus.ACTIVE,
+          isVerified: false,
+          emailVerificationTokenHash: verificationTokenHash,
+          emailVerificationTokenExpiresAt: this.resolveVerificationExpiry(),
+          masterProfile:
+            registerDto.role === UserRole.MASTER
+              ? {
+                  create: {
+                    slug: this.buildMasterSlug(registerDto.fullName),
+                    category: registerDto.category!.trim(),
+                    city: registerDto.city!.trim(),
+                    region: registerDto.region?.trim() || null,
+                    bio: registerDto.bio!.trim(),
+                    experienceText: registerDto.experienceText!.trim(),
+                    experienceYears: registerDto.experienceYears ?? null,
+                    profileImageUrl: registerDto.profileImageUrl!.trim(),
+                  },
+                }
+              : undefined,
+        },
+        include: {
+          masterProfile: true,
+        },
+      });
     });
 
-    await this.emailService.sendVerificationEmail(user.email, verificationToken);
+    const verificationEmailSent = await this.trySendVerificationEmail(
+      user.email,
+      verificationToken,
+    );
 
     return {
-      message: 'Registration successful. Please verify your email.',
+      message:
+        'Hisob yaratildi. Tasdiqlash havolasi emailingizga yuborildi, lekin tizimga kirish hozirdan mumkin.',
+      verificationEmailSent,
       user: toPublicUser(user),
     };
   }
@@ -99,13 +121,19 @@ export class AuthService {
       where: {
         emailVerificationTokenHash: sha256(token),
       },
+      include: {
+        masterProfile: true,
+      },
     });
 
     if (!user) {
       throw new NotFoundException('Verification token is invalid');
     }
 
-    if (!user.emailVerificationTokenExpiresAt || user.emailVerificationTokenExpiresAt < new Date()) {
+    if (
+      !user.emailVerificationTokenExpiresAt ||
+      user.emailVerificationTokenExpiresAt < new Date()
+    ) {
       throw new BadRequestException('Verification token has expired');
     }
 
@@ -113,9 +141,11 @@ export class AuthService {
       where: { id: user.id },
       data: {
         isVerified: true,
-        status: PrismaUserStatus.ACTIVE,
         emailVerificationTokenHash: null,
         emailVerificationTokenExpiresAt: null,
+      },
+      include: {
+        masterProfile: true,
       },
     });
 
@@ -125,10 +155,65 @@ export class AuthService {
     };
   }
 
+  async resendVerificationEmail(emailInput: string) {
+    const email = emailInput.trim().toLowerCase();
+
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+      include: {
+        masterProfile: true,
+      },
+    });
+
+    if (!user) {
+      return {
+        message:
+          'Agar bunday email mavjud bo‘lsa, tasdiqlash havolasi qayta yuborildi.',
+      };
+    }
+
+    if (user.isVerified) {
+      return {
+        message: 'Email allaqachon tasdiqlangan.',
+        user: toPublicUser(user),
+      };
+    }
+
+    const verificationToken = generateOpaqueToken();
+
+    const updatedUser = await this.prisma.user.update({
+      where: { id: user.id },
+      data: {
+        emailVerificationTokenHash: sha256(verificationToken),
+        emailVerificationTokenExpiresAt: this.resolveVerificationExpiry(),
+      },
+      include: {
+        masterProfile: true,
+      },
+    });
+
+    const verificationEmailSent = await this.trySendVerificationEmail(
+      updatedUser.email,
+      verificationToken,
+    );
+
+    return {
+      message: 'Tasdiqlash havolasi qayta yuborildi.',
+      verificationEmailSent,
+      user: toPublicUser(updatedUser),
+    };
+  }
+
   async login(loginDto: LoginDto, meta: RequestMeta) {
+    const identifier = loginDto.identifier.trim();
+    const normalizedEmail = identifier.toLowerCase();
+
     const user = await this.prisma.user.findFirst({
       where: {
-        OR: [{ email: loginDto.identifier }, { phone: loginDto.identifier }],
+        OR: [{ email: normalizedEmail }, { phone: identifier }],
+      },
+      include: {
+        masterProfile: true,
       },
     });
 
@@ -136,14 +221,13 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const passwordMatches = await comparePassword(loginDto.password, user.passwordHash);
+    const passwordMatches = await comparePassword(
+      loginDto.password,
+      user.passwordHash,
+    );
 
     if (!passwordMatches) {
       throw new UnauthorizedException('Invalid credentials');
-    }
-
-    if (!user.isVerified) {
-      throw new ForbiddenException('Please verify your email before logging in');
     }
 
     if (user.status !== PrismaUserStatus.ACTIVE) {
@@ -187,7 +271,11 @@ export class AuthService {
       throw new UnauthorizedException('Refresh token mismatch');
     }
 
-    const tokens = await this.issueTokens(payload.sub, payload.role, payload.sid);
+    const tokens = await this.issueTokens(
+      payload.sub,
+      payload.role,
+      payload.sid,
+    );
 
     await this.prisma.session.update({
       where: { id: payload.sid },
@@ -228,6 +316,9 @@ export class AuthService {
   async getMe(userId: string) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
+      include: {
+        masterProfile: true,
+      },
     });
 
     if (!user) {
@@ -290,26 +381,16 @@ export class AuthService {
       type: 'refresh',
     };
 
-    // const [accessToken, refreshToken] = await Promise.all([
-    //   this.jwtService.signAsync(accessPayload, {
-    //     secret: this.authConfig.accessSecret,
-    //     expiresIn: this.authConfig.accessExpiresIn,
-    //   }),
-    //   this.jwtService.signAsync(refreshPayload, {
-    //     secret: this.authConfig.refreshSecret,
-    //     expiresIn: this.authConfig.refreshExpiresIn,
-    //   }),
-    // ]);
-
-    const accessToken = await this.jwtService.signAsync(accessPayload, {
-      secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
-      expiresIn: Number(this.configService.get('JWT_ACCESS_EXPIRES')),
-    })
-
-    const refreshToken = await this.jwtService.signAsync(refreshPayload, {
-      secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
-      expiresIn: Number(this.configService.get('JWT_REFRESH_EXPIRES')),
-    });
+    const [accessToken, refreshToken] = await Promise.all([
+      this.jwtService.signAsync(accessPayload, {
+        secret: this.authConfig.accessSecret,
+        expiresIn: this.authConfig.accessExpiresIn as never,
+      }),
+      this.jwtService.signAsync(refreshPayload, {
+        secret: this.authConfig.refreshSecret,
+        expiresIn: this.authConfig.refreshExpiresIn as never,
+      }),
+    ]);
 
     return {
       accessToken,
@@ -334,5 +415,31 @@ export class AuthService {
 
     return new Date(Date.now() + value * unitToMilliseconds[unit]);
   }
-}
 
+  private resolveVerificationExpiry() {
+    return new Date(Date.now() + 24 * 60 * 60 * 1000);
+  }
+
+  private buildMasterSlug(fullName: string) {
+    const base =
+      fullName
+        .toLowerCase()
+        .normalize('NFKD')
+        .replace(/[^\w\s-]/g, '')
+        .trim()
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .slice(0, 48) || 'master';
+
+    return `${base}-${randomUUID().slice(0, 8)}`;
+  }
+
+  private async trySendVerificationEmail(email: string, token: string) {
+    try {
+      await this.emailService.sendVerificationEmail(email, token);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+}

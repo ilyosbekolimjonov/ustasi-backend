@@ -12,4 +12,3 @@ export class UpdateLevelDto extends PartialType(CreateLevelDto) {
   @ApiPropertyOptional({ description: 'Level name in English' })
   name_en?: string;
 }
-

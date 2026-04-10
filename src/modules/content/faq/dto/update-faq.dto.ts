@@ -21,4 +21,3 @@ export class UpdateFaqDto extends PartialType(CreateFaqDto) {
   @ApiProperty({ description: 'Answer in English', required: false })
   answer_en?: string;
 }
-

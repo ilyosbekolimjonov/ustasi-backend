@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { BrandService } from './brand.service';
 import { CreateBrandDto } from './dto/create-brand.dto';
 import { UpdateBrandDto } from './dto/update-brand.dto';
@@ -25,7 +35,11 @@ export class BrandController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create a new brand' })
   @ApiBody({ type: CreateBrandDto })
-  @ApiResponse({ status: 201, description: 'Brand created successfully', type: CreateBrandDto })
+  @ApiResponse({
+    status: 201,
+    description: 'Brand created successfully',
+    type: CreateBrandDto,
+  })
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @Roles(ROLE.ADMIN)
@@ -36,10 +50,29 @@ export class BrandController {
 
   @Get()
   @ApiOperation({ summary: 'Get all brands with pagination and search' })
-  @ApiQuery({ name: 'page', required: false, description: 'Page number', type: Number })
-  @ApiQuery({ name: 'limit', required: false, description: 'Items per page', type: Number })
-  @ApiQuery({ name: 'search', required: false, description: 'Search keyword', type: String })
-  @ApiResponse({ status: 200, description: 'List of brands', type: [CreateBrandDto] })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    description: 'Page number',
+    type: Number,
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    description: 'Items per page',
+    type: Number,
+  })
+  @ApiQuery({
+    name: 'search',
+    required: false,
+    description: 'Search keyword',
+    type: String,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'List of brands',
+    type: [CreateBrandDto],
+  })
   findAll(@Query() query: { page?: number; limit?: number; search?: string }) {
     const page = Number(query.page) || 1;
     const limit = Number(query.limit) || 10;
@@ -50,7 +83,11 @@ export class BrandController {
   @Get(':id')
   @ApiOperation({ summary: 'Get a brand by ID' })
   @ApiParam({ name: 'id', required: true, description: 'Brand ID' })
-  @ApiResponse({ status: 200, description: 'Brand found', type: CreateBrandDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Brand found',
+    type: CreateBrandDto,
+  })
   @ApiResponse({ status: 404, description: 'Brand not found' })
   findOne(@Param('id') id: string) {
     return this.brandService.findOne(id);
@@ -61,7 +98,11 @@ export class BrandController {
   @ApiOperation({ summary: 'Update a brand by ID' })
   @ApiParam({ name: 'id', required: true, description: 'Brand ID' })
   @ApiBody({ type: UpdateBrandDto })
-  @ApiResponse({ status: 200, description: 'Brand updated successfully', type: CreateBrandDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Brand updated successfully',
+    type: CreateBrandDto,
+  })
   @ApiResponse({ status: 404, description: 'Brand not found' })
   @Roles(ROLE.ADMIN, ROLE.SUPER_ADMIN)
   @UseGuards(AuthGuard, RolesGuard)
@@ -81,4 +122,3 @@ export class BrandController {
     return this.brandService.remove(id);
   }
 }
-

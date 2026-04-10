@@ -18,4 +18,3 @@ export class CreateProfessionToolDto {
   @IsNotEmpty()
   toolId: string;
 }
-

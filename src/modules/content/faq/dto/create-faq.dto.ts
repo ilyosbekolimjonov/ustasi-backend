@@ -12,7 +12,10 @@ export class CreateFaqDto {
   @IsNotEmpty()
   question_ru: string;
 
-  @ApiProperty({ example: 'What is the question?', description: 'Question in English' })
+  @ApiProperty({
+    example: 'What is the question?',
+    description: 'Question in English',
+  })
   @IsString()
   @IsNotEmpty()
   question_en: string;
@@ -22,14 +25,19 @@ export class CreateFaqDto {
   @IsNotEmpty()
   answer_uz: string;
 
-  @ApiProperty({ example: 'Это ответ на вопрос.', description: 'Answer in Russian' })
+  @ApiProperty({
+    example: 'Это ответ на вопрос.',
+    description: 'Answer in Russian',
+  })
   @IsString()
   @IsNotEmpty()
   answer_ru: string;
 
-  @ApiProperty({ example: 'This is the answer.', description: 'Answer in English' })
+  @ApiProperty({
+    example: 'This is the answer.',
+    description: 'Answer in English',
+  })
   @IsString()
   @IsNotEmpty()
   answer_en: string;
 }
-

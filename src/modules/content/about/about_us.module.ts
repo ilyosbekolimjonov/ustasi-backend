@@ -7,4 +7,3 @@ import { AboutUsController } from './about_us.controller';
   providers: [AboutUsService],
 })
 export class AboutUsModule {}
-

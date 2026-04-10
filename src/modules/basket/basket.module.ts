@@ -7,4 +7,3 @@ import { BasketService } from './basket.service';
   providers: [BasketService],
 })
 export class BasketModule {}
-

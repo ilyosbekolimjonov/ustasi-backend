@@ -5,7 +5,9 @@ export const validationSchema = Joi.object({
     .valid('development', 'test', 'production')
     .default('development'),
   PORT: Joi.number().port().default(3000),
-  APP_BASE_URL: Joi.string().uri({ scheme: ['http', 'https'] }).required(),
+  APP_BASE_URL: Joi.string()
+    .uri({ scheme: ['http', 'https'] })
+    .required(),
   CORS_ORIGIN: Joi.string().allow('').default('*'),
   DATABASE_URL: Joi.string().required(),
   JWT_ACCESS_SECRET: Joi.string().min(32).required(),

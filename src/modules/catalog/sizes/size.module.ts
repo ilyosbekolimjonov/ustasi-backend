@@ -7,4 +7,3 @@ import { SizeController } from './size.controller';
   providers: [SizeService],
 })
 export class SizeModule {}
-

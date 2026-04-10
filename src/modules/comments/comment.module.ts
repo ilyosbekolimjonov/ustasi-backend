@@ -7,4 +7,3 @@ import { CommentController } from './comment.controller';
   providers: [CommentService],
 })
 export class CommentModule {}
-

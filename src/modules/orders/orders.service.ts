@@ -4,7 +4,11 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { OrderStatus, TimeUnit, UserRole } from '../../common/constants/domain.enums';
+import {
+  OrderStatus,
+  TimeUnit,
+} from '../../common/constants/domain.enums';
+import { isUserRole } from '../../common/constants/user-roles';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 import { toNumber } from '../../common/utils/number.util';
 import { TelegramService } from '../../integrations/telegram/telegram.service';
@@ -104,7 +108,9 @@ export class OrdersService {
 
   async findAllForAdmin(query: PaginationQueryDto & { status?: string }) {
     const orders = await this.prisma.order.findMany({
-      where: query.status ? { status: query.status as OrderRecord['status'] } : undefined,
+      where: query.status
+        ? { status: query.status as OrderRecord['status'] }
+        : undefined,
       include: orderInclude,
       skip: (query.page - 1) * query.limit,
       take: query.limit,
@@ -126,7 +132,7 @@ export class OrdersService {
       throw new NotFoundException('Order not found');
     }
 
-    if (role === UserRole.USER_FIZ || role === UserRole.USER_YUR) {
+    if (isUserRole(role)) {
       if (order.userId !== userId) {
         throw new ForbiddenException('You cannot access this order');
       }
@@ -155,7 +161,12 @@ export class OrdersService {
     return this.mapOrder(order);
   }
 
-  async update(userId: string, role: string, orderId: string, dto: UpdateOrderDto) {
+  async update(
+    userId: string,
+    role: string,
+    orderId: string,
+    dto: UpdateOrderDto,
+  ) {
     const order = await this.prisma.order.findUnique({
       where: { id: orderId },
       include: orderInclude,
@@ -165,7 +176,7 @@ export class OrdersService {
       throw new NotFoundException('Order not found');
     }
 
-    if (role === UserRole.USER_FIZ || role === UserRole.USER_YUR) {
+    if (isUserRole(role)) {
       if (order.userId !== userId) {
         throw new ForbiddenException('You cannot update this order');
       }
@@ -200,7 +211,7 @@ export class OrdersService {
       throw new NotFoundException('Order not found');
     }
 
-    if (role === UserRole.USER_FIZ || role === UserRole.USER_YUR) {
+    if (isUserRole(role)) {
       if (order.userId !== userId) {
         throw new ForbiddenException('You cannot delete this order');
       }

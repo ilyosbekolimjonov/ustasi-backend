@@ -7,7 +7,7 @@ import { EmailConfig } from '../../config/email.config';
 @Injectable()
 export class EmailService {
   private readonly logger = new Logger(EmailService.name);
-  private readonly transporter;
+  private readonly transporter: nodemailer.Transporter;
   private readonly emailConfig: EmailConfig;
   private readonly appConfig: AppConfig;
 
@@ -26,19 +26,19 @@ export class EmailService {
 
   async sendVerificationEmail(email: string, token: string) {
     const verificationUrl = new URL(
-      `/api/auth/verify-email?token=${token}`,
+      `/auth/verify-email?token=${token}`,
       this.appConfig.appBaseUrl,
     ).toString();
 
     await this.transporter.sendMail({
       from: this.emailConfig.from,
       to: email,
-      subject: 'Verify your Ustasi account',
+      subject: 'Ustasi emailingizni tasdiqlang',
       html: `
-        <p>Welcome to Ustasi.</p>
-        <p>Please verify your email by clicking the link below:</p>
+        <p>Ustasi'ga xush kelibsiz.</p>
+        <p>Email manzilingizni tasdiqlash uchun quyidagi havolani bosing:</p>
         <p><a href="${verificationUrl}">${verificationUrl}</a></p>
-        <p>This link expires in 24 hours.</p>
+        <p>Havola 24 soat davomida amal qiladi.</p>
       `,
     });
 

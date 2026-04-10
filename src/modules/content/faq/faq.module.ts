@@ -7,4 +7,3 @@ import { FaqController } from './faq.controller';
   providers: [FaqService],
 })
 export class FaqModule {}
-

@@ -7,4 +7,3 @@ import { PartnersController } from './partners.controller';
   providers: [PartnersService],
 })
 export class PartnersModule {}
-

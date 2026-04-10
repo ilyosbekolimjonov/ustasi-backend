@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { CapasityService } from './capasity.service';
 import { CreateCapasityDto } from './dto/create-capasity.dto';
 import { UpdateCapasityDto } from './dto/update-capasity.dto';
@@ -25,7 +35,11 @@ export class CapasityController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create a new capasity' })
   @ApiBody({ type: CreateCapasityDto })
-  @ApiResponse({ status: 201, description: 'Capasity created successfully', type: CreateCapasityDto })
+  @ApiResponse({
+    status: 201,
+    description: 'Capasity created successfully',
+    type: CreateCapasityDto,
+  })
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @Roles(ROLE.ADMIN)
   @UseGuards(AuthGuard, RolesGuard)
@@ -34,11 +48,32 @@ export class CapasityController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all capasity records with pagination and search' })
-  @ApiQuery({ name: 'page', required: false, description: 'Page number', type: Number })
-  @ApiQuery({ name: 'limit', required: false, description: 'Items per page', type: Number })
-  @ApiQuery({ name: 'search', required: false, description: 'Search keyword', type: String })
-  @ApiResponse({ status: 200, description: 'Returns a list of capasity records', type: [CreateCapasityDto] })
+  @ApiOperation({
+    summary: 'Get all capasity records with pagination and search',
+  })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    description: 'Page number',
+    type: Number,
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    description: 'Items per page',
+    type: Number,
+  })
+  @ApiQuery({
+    name: 'search',
+    required: false,
+    description: 'Search keyword',
+    type: String,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns a list of capasity records',
+    type: [CreateCapasityDto],
+  })
   findAll(@Query() query: { page?: number; limit?: number; search?: string }) {
     const page = Number(query.page) || 1;
     const limit = Number(query.limit) || 10;
@@ -49,7 +84,11 @@ export class CapasityController {
   @Get(':id')
   @ApiOperation({ summary: 'Get a capasity by ID' })
   @ApiParam({ name: 'id', required: true, description: 'Capasity ID' })
-  @ApiResponse({ status: 200, description: 'Returns the capasity record', type: CreateCapasityDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns the capasity record',
+    type: CreateCapasityDto,
+  })
   @ApiResponse({ status: 404, description: 'Capasity not found' })
   findOne(@Param('id') id: string) {
     return this.capasityService.findOne(id);
@@ -60,11 +99,18 @@ export class CapasityController {
   @ApiOperation({ summary: 'Update a capasity by ID' })
   @ApiParam({ name: 'id', required: true, description: 'Capasity ID' })
   @ApiBody({ type: UpdateCapasityDto })
-  @ApiResponse({ status: 200, description: 'Capasity updated successfully', type: CreateCapasityDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Capasity updated successfully',
+    type: CreateCapasityDto,
+  })
   @ApiResponse({ status: 404, description: 'Capasity not found' })
   @Roles(ROLE.ADMIN, ROLE.SUPER_ADMIN)
   @UseGuards(AuthGuard, RolesGuard)
-  update(@Param('id') id: string, @Body() updateCapasityDto: UpdateCapasityDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateCapasityDto: UpdateCapasityDto,
+  ) {
     return this.capasityService.update(id, updateCapasityDto);
   }
 
@@ -80,4 +126,3 @@ export class CapasityController {
     return this.capasityService.remove(id);
   }
 }
-

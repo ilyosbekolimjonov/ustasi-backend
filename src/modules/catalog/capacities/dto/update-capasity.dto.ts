@@ -12,4 +12,3 @@ export class UpdateCapasityDto extends PartialType(CreateCapasityDto) {
   @ApiProperty({ description: 'Capacity name in English', required: false })
   name_en?: string;
 }
-

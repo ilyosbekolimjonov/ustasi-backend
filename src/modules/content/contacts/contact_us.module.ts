@@ -7,4 +7,3 @@ import { ContactUsController } from './contact_us.controller';
   providers: [ContactUsService],
 })
 export class ContactUsModule {}
-

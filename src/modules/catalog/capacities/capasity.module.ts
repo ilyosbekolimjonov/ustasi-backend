@@ -7,4 +7,3 @@ import { CapasityController } from './capasity.controller';
   providers: [CapasityService],
 })
 export class CapasityModule {}
-

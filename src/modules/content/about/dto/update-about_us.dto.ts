@@ -6,10 +6,16 @@ export class UpdateAboutUsDto extends PartialType(CreateAboutUsDto) {
   @ApiProperty({ description: 'General information in Uzbek', required: false })
   generalInformation_uz?: string;
 
-  @ApiProperty({ description: 'General information in Russian', required: false })
+  @ApiProperty({
+    description: 'General information in Russian',
+    required: false,
+  })
   generalInformation_ru?: string;
 
-  @ApiProperty({ description: 'General information in English', required: false })
+  @ApiProperty({
+    description: 'General information in English',
+    required: false,
+  })
   generalInformation_en?: string;
 
   @ApiProperty({ description: 'Contact email', required: false })

@@ -26,7 +26,6 @@ import { Roles } from '../../../decorators/roles.decorators';
 import { AuthGuard } from '../../../common/guards/auth.guard';
 import { RolesGuard } from '../../../common/guards/roles.guard';
 
-
 @ApiTags('Order Master')
 @Controller('order-master')
 export class OrderMasterController {
@@ -35,7 +34,10 @@ export class OrderMasterController {
   @Post()
   @ApiOperation({ summary: 'Create a new order-master record' })
   @ApiBody({ type: CreateOrderMasterDto })
-  @ApiResponse({ status: 201, description: 'Order-master created successfully' })
+  @ApiResponse({
+    status: 201,
+    description: 'Order-master created successfully',
+  })
   @ApiBearerAuth()
   @Roles(ROLE.ADMIN)
   @UseGuards(AuthGuard, RolesGuard)
@@ -73,7 +75,10 @@ export class OrderMasterController {
   @ApiBearerAuth()
   @Roles(ROLE.ADMIN, ROLE.SUPER_ADMIN)
   @UseGuards(AuthGuard, RolesGuard)
-  update(@Param('id') id: string, @Body() updateOrderMasterDto: UpdateOrderMasterDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateOrderMasterDto: UpdateOrderMasterDto,
+  ) {
     return this.orderMasterService.update(id, updateOrderMasterDto);
   }
 
@@ -87,4 +92,3 @@ export class OrderMasterController {
     return this.orderMasterService.remove(id);
   }
 }
-

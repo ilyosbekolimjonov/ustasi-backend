@@ -18,4 +18,3 @@ export class UpdateContactUsDto extends PartialType(CreateContactUsDto) {
   @ApiProperty({ description: 'Message from the user', required: false })
   message?: string;
 }
-

@@ -1,4 +1,6 @@
 export const UserRole = {
+  USER: 'USER',
+  MASTER: 'MASTER',
   USER_FIZ: 'USER_FIZ',
   USER_YUR: 'USER_YUR',
   ADMIN: 'ADMIN',
@@ -30,6 +32,17 @@ export const OrderStatus = {
 } as const;
 
 export type OrderStatus = (typeof OrderStatus)[keyof typeof OrderStatus];
+
+export const ServiceRequestStatus = {
+  OPEN: 'OPEN',
+  CLAIMED: 'CLAIMED',
+  IN_PROGRESS: 'IN_PROGRESS',
+  DONE: 'DONE',
+  CANCELLED: 'CANCELLED',
+} as const;
+
+export type ServiceRequestStatus =
+  (typeof ServiceRequestStatus)[keyof typeof ServiceRequestStatus];
 
 export const TimeUnit = {
   HOUR: 'HOUR',

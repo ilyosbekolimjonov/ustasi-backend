@@ -50,7 +50,9 @@ async function bootstrap() {
 
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Ustasi API')
-    .setDescription('Ustasi backend with a classic NestJS module structure and secure auth flows.')
+    .setDescription(
+      'Ustasi backend with a classic NestJS module structure and secure auth flows.',
+    )
     .setVersion('2.0.0')
     .addBearerAuth()
     .build();

@@ -7,4 +7,3 @@ import { MasterProfessionController } from './master-profession.controller';
   providers: [MasterProfessionService],
 })
 export class MasterProfessionModule {}
-

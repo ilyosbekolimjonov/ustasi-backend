@@ -18,7 +18,12 @@ export class UsersService {
     const where = query.search
       ? {
           OR: [
-            { fullname: { contains: query.search, mode: 'insensitive' as const } },
+            {
+              fullname: {
+                contains: query.search,
+                mode: 'insensitive' as const,
+              },
+            },
             { email: { contains: query.search, mode: 'insensitive' as const } },
             { phone: { contains: query.search, mode: 'insensitive' as const } },
           ],
@@ -30,6 +35,9 @@ export class UsersService {
         where,
         skip: (query.page - 1) * query.limit,
         take: query.limit,
+        include: {
+          masterProfile: true,
+        },
         orderBy: {
           createdAt: 'desc',
         },
@@ -50,6 +58,9 @@ export class UsersService {
   async findOne(id: string) {
     const user = await this.prisma.user.findUnique({
       where: { id },
+      include: {
+        masterProfile: true,
+      },
     });
     if (!user) {
       throw new NotFoundException('User not found');
@@ -71,8 +82,9 @@ export class UsersService {
     const updatedUser = await this.prisma.user.update({
       where: { id: userId },
       data: {
-        fullname: dto.fullname,
+        fullname: dto.fullName,
         phone: dto.phone,
+        avatarUrl: dto.avatarUrl,
         regionId: dto.regionId,
         iin: dto.iin,
         mfo: dto.mfo,
@@ -80,6 +92,9 @@ export class UsersService {
         bank: dto.bank,
         oked: dto.oked,
         address: dto.address,
+      },
+      include: {
+        masterProfile: true,
       },
     });
     return toPublicUser(updatedUser);
@@ -121,6 +136,9 @@ export class UsersService {
         oked: dto.oked,
         address: dto.address,
       },
+      include: {
+        masterProfile: true,
+      },
     });
     return toPublicUser(updatedUser);
   }
@@ -143,4 +161,3 @@ export class UsersService {
     };
   }
 }
-
