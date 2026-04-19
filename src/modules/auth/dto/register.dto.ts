@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
   IsEmail,
   IsIn,
@@ -6,6 +7,7 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
+  Max,
   Matches,
   MaxLength,
   Min,
@@ -73,8 +75,10 @@ export class RegisterDto {
 
   @ApiPropertyOptional({ example: 7 })
   @IsOptional()
+  @Type(() => Number)
   @IsInt()
   @Min(0)
+  @Max(30)
   experienceYears?: number;
 
   @ApiPropertyOptional({

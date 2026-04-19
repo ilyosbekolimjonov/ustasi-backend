@@ -2,6 +2,7 @@ import { ConsoleLogger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import type { Request, Response } from 'express';
 import helmet from 'helmet';
 import { AppModule } from './app.module';
 import { AppConfig } from './config/app.config';
@@ -31,6 +32,9 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   const appConfig = configService.getOrThrow<AppConfig>('app');
 
+  app.use('/favicon.ico', (_request: Request, response: Response) => {
+    response.status(204).send();
+  });
   // app.setGlobalPrefix(appConfig.apiPrefix);
   app.use(helmet());
   app.useGlobalPipes(

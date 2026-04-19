@@ -218,7 +218,7 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw this.invalidCredentialsException();
     }
 
     const passwordMatches = await comparePassword(
@@ -227,7 +227,7 @@ export class AuthService {
     );
 
     if (!passwordMatches) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw this.invalidCredentialsException();
     }
 
     if (user.status !== PrismaUserStatus.ACTIVE) {
@@ -396,6 +396,13 @@ export class AuthService {
       accessToken,
       refreshToken,
     };
+  }
+
+  private invalidCredentialsException() {
+    return new UnauthorizedException({
+      code: 'INVALID_CREDENTIALS',
+      message: 'Email or password is incorrect',
+    });
   }
 
   private resolveExpiryDate(expiresIn: string): Date {
