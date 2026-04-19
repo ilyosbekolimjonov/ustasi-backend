@@ -24,17 +24,57 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const errorResponse = isHttpException
       ? exception.getResponse()
       : 'Internal server error';
+    const errorPayload = this.normalizeErrorPayload(errorResponse, status);
 
-    this.logger.error(
-      `${request.method} ${request.url}`,
-      exception instanceof Error ? exception.stack : undefined,
-    );
+    const logMessage = `${request.method} ${request.url} ${status} ${errorPayload.message}`;
+
+    if (status >= HttpStatus.INTERNAL_SERVER_ERROR) {
+      this.logger.error(
+        logMessage,
+        exception instanceof Error ? exception.stack : undefined,
+      );
+    } else {
+      this.logger.warn(logMessage);
+    }
 
     response.status(status).json({
       statusCode: status,
+      ...errorPayload,
       path: request.url,
       timestamp: new Date().toISOString(),
-      error: errorResponse,
     });
+  }
+
+  private normalizeErrorPayload(errorResponse: unknown, status: number) {
+    if (typeof errorResponse === 'string') {
+      return {
+        message: errorResponse,
+        error: HttpStatus[status] ?? 'Error',
+      };
+    }
+
+    if (errorResponse && typeof errorResponse === 'object') {
+      const payload = errorResponse as Record<string, unknown>;
+      const rawMessage = payload.message;
+      const message = Array.isArray(rawMessage)
+        ? rawMessage.filter((item) => typeof item === 'string').join(', ')
+        : typeof rawMessage === 'string'
+          ? rawMessage
+          : 'Request failed';
+
+      return {
+        message,
+        error:
+          typeof payload.error === 'string'
+            ? payload.error
+            : HttpStatus[status] ?? 'Error',
+        code: typeof payload.code === 'string' ? payload.code : undefined,
+      };
+    }
+
+    return {
+      message: 'Internal server error',
+      error: HttpStatus[status] ?? 'Error',
+    };
   }
 }

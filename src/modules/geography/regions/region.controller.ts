@@ -26,17 +26,17 @@ import { ROLE } from '../../../common/constants/legacy-prisma.enums';
 import { AuthGuard } from '../../../common/guards/auth.guard';
 import { RolesGuard } from '../../../common/guards/roles.guard';
 
-@ApiTags('Region')
+@ApiTags('Viloyat')
 @Controller('region')
 export class RegionController {
   constructor(private readonly regionService: RegionService) {}
 
   @Post()
-  @ApiOperation({ summary: 'Create a new region' })
+  @ApiOperation({ summary: 'Create a new Uzbekistan region / viloyat' })
   @ApiBody({ type: CreateRegionDto })
   @ApiResponse({
     status: 201,
-    description: 'Region created successfully',
+    description: 'Viloyat created successfully',
     type: CreateRegionDto,
   })
   @ApiResponse({ status: 400, description: 'Bad Request' })
@@ -49,7 +49,7 @@ export class RegionController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all regions with pagination and search' })
+  @ApiOperation({ summary: 'Get Uzbekistan regions / viloyatlar with pagination and search' })
   @ApiQuery({
     name: 'page',
     required: false,
@@ -70,7 +70,7 @@ export class RegionController {
   })
   @ApiResponse({
     status: 200,
-    description: 'List of regions',
+    description: 'List of viloyatlar',
     type: [CreateRegionDto],
   })
   findAll(@Query() query: { page?: number; limit?: number; search?: string }) {
@@ -81,28 +81,28 @@ export class RegionController {
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get a region by ID' })
-  @ApiParam({ name: 'id', required: true, description: 'Region ID' })
+  @ApiOperation({ summary: 'Get a viloyat by ID' })
+  @ApiParam({ name: 'id', required: true, description: 'Viloyat ID' })
   @ApiResponse({
     status: 200,
-    description: 'Region found',
+    description: 'Viloyat found',
     type: CreateRegionDto,
   })
-  @ApiResponse({ status: 404, description: 'Region not found' })
+  @ApiResponse({ status: 404, description: 'Viloyat not found' })
   findOne(@Param('id') id: string) {
     return this.regionService.findOne(id);
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: 'Update a region by ID' })
-  @ApiParam({ name: 'id', required: true, description: 'Region ID' })
+  @ApiOperation({ summary: 'Update a viloyat by ID' })
+  @ApiParam({ name: 'id', required: true, description: 'Viloyat ID' })
   @ApiBody({ type: UpdateRegionDto })
   @ApiResponse({
     status: 200,
-    description: 'Region updated successfully',
+    description: 'Viloyat updated successfully',
     type: CreateRegionDto,
   })
-  @ApiResponse({ status: 404, description: 'Region not found' })
+  @ApiResponse({ status: 404, description: 'Viloyat not found' })
   @ApiBearerAuth()
   @Roles(ROLE.ADMIN, ROLE.SUPER_ADMIN)
   @UseGuards(AuthGuard, RolesGuard)
@@ -111,10 +111,10 @@ export class RegionController {
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete a region by ID' })
-  @ApiParam({ name: 'id', required: true, description: 'Region ID' })
-  @ApiResponse({ status: 200, description: 'Region deleted successfully' })
-  @ApiResponse({ status: 404, description: 'Region not found' })
+  @ApiOperation({ summary: 'Delete a viloyat by ID' })
+  @ApiParam({ name: 'id', required: true, description: 'Viloyat ID' })
+  @ApiResponse({ status: 200, description: 'Viloyat deleted successfully' })
+  @ApiResponse({ status: 404, description: 'Viloyat not found' })
   @ApiBearerAuth()
   @Roles(ROLE.ADMIN)
   @UseGuards(AuthGuard, RolesGuard)
