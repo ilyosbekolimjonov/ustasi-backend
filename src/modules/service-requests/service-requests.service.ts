@@ -251,6 +251,18 @@ export class ServiceRequestsService {
         throw new BadRequestException('This request has already been claimed');
       }
 
+      await tx.conversation.upsert({
+        where: {
+          requestId,
+        },
+        create: {
+          requestId,
+          userId: existing.userId,
+          masterId: userId,
+        },
+        update: {},
+      });
+
       return tx.serviceRequest.findUniqueOrThrow({
         where: { id: requestId },
         include: serviceRequestInclude,
