@@ -12,6 +12,7 @@ import { ContactUsModule } from './modules/content/contacts/contact_us.module';
 import { FaqModule } from './modules/content/faq/faq.module';
 import { PartnersModule } from './modules/content/partners/partners.module';
 import { ShowcaseModule } from './modules/content/showcase/showcase.module';
+import { ChatModule } from './modules/chat/chat.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { LevelModule } from './modules/geography/levels/level.module';
 import { RegionModule } from './modules/geography/regions/region.module';
@@ -67,6 +68,7 @@ import { PrismaModule } from './prisma/prisma.module';
     FaqModule,
     PartnersModule,
     ShowcaseModule,
+    ChatModule,
     DashboardModule,
     LevelModule,
     RegionModule,
